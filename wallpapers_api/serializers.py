@@ -1,18 +1,16 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from wallpapers.models import Wallpaper
+from wallpapers.models import Wallpaper, Download
 
 
 class WallpaperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallpaper
-        fields = '__all__'
+        fields = ['title', 'tags', 'category', 'image', 'thumbnail']
 
-    # def validate_content(self, data):
-    #     wallpapers = Wallpaper.objects.all()
-    #     for wallpaper in wallpapers:
-    #         if False:
-    #             raise ValidationError(message='...')
-    #
-    #     return data
+
+class DownloadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Download
+        fields = ['wallpaper']

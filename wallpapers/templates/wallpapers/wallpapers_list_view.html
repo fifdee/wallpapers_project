@@ -1,0 +1,80 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Great wallpapers{% endblock title %}
+
+{% block content %}
+    {% include 'wallpapers/downloads_count.html' %}
+
+    <section class="py-2">
+        <div class="container px-1 mt-1">
+            <div class="row justify-content-center">
+                <div class="btn btn-dark col-5 m-1" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"sort":"newest", "category":"{{ request.session.category }}"}'>
+                    Newest
+                </div>
+
+                <div class="btn btn-dark col-5 m-1" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"sort":"trending", "category":"{{ request.session.category }}"}'>
+                    Trending
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-2">
+        <div class="container px-1 mt-1">
+            <div class="row">
+                <div class="col-1 m-2">
+                    <div class="btn btn-dark" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                         hx-vals='{"category":"all", "sort":"{{ request.session.sort }}"}'>All
+                    </div>
+                </div>
+                {% for category in categories %}
+                    <div class="col-1 m-2">
+                        <div class="btn btn-dark" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                             hx-vals='{"category":"{{ category.title }}", "sort":"{{ request.session.sort }}"}'>
+                            {{ category.title }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="py-2">
+        <div class="container px-1 mt-1">
+            <div class="row">
+                {% for object in object_list %}
+                    <div class="card bg-black col-6 mx-0 my-2 p-1">
+                        <img src="{{ object.thumbnail.url }}" class="card-img-top" alt="{{ object.title }}">
+                        <div class="card-body">
+                            <a href="{{ object.image.url }}" target="_blank"><div hx-post="{% url 'wallpaper_download_view' %}" hx-swap="none"
+                                     hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1">Download</div></a>&nbsp;
+                            <a href="{% url 'wallpaper_detail_view' object.slug %}" class="btn btn-dark py-1 btn-sm">Details</a>
+                            <h6 class="card-text text-white-50 small mt-3">{{ object.title }}</h6>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <div class="pagination text-white-50 justify-content-center mb-3">
+        <span class="step-links">
+            {% if object_list.has_previous %}
+                <a class="btn btn-dark py-1" href="?page=1">&laquo; first</a>
+                <a class="btn btn-dark py-1 btn-lg" href="?page={{ object_list.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+                <a class="btn btn-dark py-1 btn-lg" href="?page={{ object_list.next_page_number }}">next</a>
+                <a class="btn btn-dark py-1" href="?page={{ object_list.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endblock content %}

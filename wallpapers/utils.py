@@ -2,20 +2,43 @@ import re
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile as imuf
 from PIL import Image
+from django.conf import settings
 
 
-def create_thumbnail(input_image):
-    size = 512, 512
+def title_from_filename(filename, is_landscape=True):
+    import re
 
-    with Image.open(input_image) as im:
-        from io import BytesIO
-        output = BytesIO()
-        im.thumbnail(size)
-        im.save(output, "JPEG")
-        contents = output.getvalue()
-        output.close()
+    title = filename
+    title = title.replace('fifdee_', '').replace('_', ' ').replace('.jpg', '')
+    r = re.findall(r'[abcdef1234567890-]{36}', title)
+    if len(r) > 0:
+        to_delete = r[0]
+        title = title.replace(to_delete, '')
 
-        return contents
+    if 'wallpaper' not in title:
+        title += ' wallpaper'
+
+    if not is_landscape:
+        if 'mobile' not in title:
+            title = title.replace('wallpaper', 'mobile wallpaper')
+
+    return title
+
+
+def get_image_title_and_tags(image_url):
+    from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+    from msrest.authentication import CognitiveServicesCredentials
+    subscription_key = settings.IMAGE_CAPTIONING_KEY
+    endpoint = settings.IMAGE_CAPTIONING_ENDPOINT
+
+    computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
+    try:
+        result = computervision_client.describe_image(image_url)
+        return {'tags': result.tags, 'title': result.captions[0].text}
+    except Exception as e:
+        print(f'captioning exception: {e}')
+
+    return None
 
 
 def compress_image_return_with_thumbnail(input_image):
@@ -33,8 +56,9 @@ def compress_image_return_with_thumbnail(input_image):
         img.save(outio_thumb, format='JPEG', quality=75)
 
         output_image = imuf(outio, 'ImageField', f"{filename}.jpg", 'image/jpeg', outio.tell(), None)
-        output_image_thumb = imuf(outio_thumb, 'ImageField', f"{filename}_thumb.jpg", 'image/jpeg', outio_thumb.tell(), None)
-        # return that file name to store in Database
+        output_image_thumb = imuf(outio_thumb, 'ImageField', f"{filename}_thumb.jpg", 'image/jpeg', outio_thumb.tell(),
+                                  None)
+
         return output_image, output_image_thumb
 
 

@@ -1,12 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.sitemaps import ping_google
-from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.timezone import now
 
-from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail
+from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail, get_image_title_and_tags, \
+    title_from_filename
 
 
 class User(AbstractUser):
@@ -14,21 +14,20 @@ class User(AbstractUser):
 
 
 class Wallpaper(models.Model):
-    title = models.CharField(max_length=200, blank=True)
-    description = models.TextField(default='', blank=True)
+    title = models.TextField(blank=True)
+    tags = models.TextField(default='', blank=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(max_length=200)
     thumbnail = models.ImageField(blank=True, max_length=200)
-    downloads_count = models.IntegerField(default=0)
     approved = models.BooleanField(default=False)
     date_added = models.DateTimeField(default=now)
     is_landscape = models.BooleanField(default=True)
     is_premium = models.BooleanField(default=False)
-    slug = models.SlugField(null=False, unique=True, blank=True)
+    slug = models.SlugField(null=False, unique=True, blank=True, max_length=150)
 
     def __str__(self):
-        if len(self.title) > 50:
-            return self.title[:50] + '[...]'
+        if len(self.title) > 150:
+            return self.title[:150] + '[...]'
         else:
             return self.title
 
@@ -39,10 +38,36 @@ class Wallpaper(models.Model):
                 self.is_landscape = False
 
         if not self.title:
-            self.title = str(self.image.name).replace('fifdee_', '').replace('_', ' ').replace('.jpg', '')
+            self.title = title_from_filename(self.image.name, self.is_landscape)
 
-        if not self.slug:
-            unique_slugify(self, self.title)
+        return super().save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        # single instance delete only, doesn't work for queryset deleting (e.g. in admin)
+        self.image.delete()
+        self.thumbnail.delete()
+
+        super(Wallpaper, self).delete()
+
+    def get_absolute_url(self):
+        return reverse('wallpaper_details', args=[self.slug])
+
+    class Meta:
+        ordering = ['-date_added']
+
+
+def post_caption_wallpaper(sender, instance, created, **kwargs):
+    if created:
+        print(f'Image url: {instance.image.url}')
+        r = get_image_title_and_tags(instance.image.url)
+        print(r)
+        if r:
+            instance.tags = ', '.join(r['tags']) + ', ' + instance.tags
+            instance.title = r['title'] + ' - ' + instance.title + '(' + instance.tags + ')'
+
+        unique_slugify(instance, instance.title)
+        instance.save()
+
         try:
             ...
             # ping_google()
@@ -51,13 +76,8 @@ class Wallpaper(models.Model):
             # of HTTP-related exceptions.
             pass
 
-        return super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse('wallpaper_details', args=[self.slug])
-
-    class Meta:
-        ordering = ['-date_added']
+post_save.connect(post_caption_wallpaper, sender=Wallpaper)
 
 
 class Category(models.Model):
@@ -69,3 +89,12 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Download(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, null=True)
+    wallpaper = models.ForeignKey('Wallpaper', on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=now)
+
+    def __str__(self):
+        return str(self.wallpaper) + ' | ' + str(self.time)

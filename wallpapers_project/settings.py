@@ -86,9 +86,11 @@ INSTALLED_APPS = [
     'huey.contrib.djhuey',
     'rest_framework',
     'rest_framework_api_key',
+    'django_user_agents',
 
     'wallpapers.apps.WallpapersConfig',
 ]
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
@@ -111,6 +113,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'wallpapers_project.urls'
@@ -215,6 +218,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_EMAIL_VERIFICATION = None
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
 if not DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -246,5 +250,7 @@ AZURE_ACCOUNT_NAME = 'wallpapers0'
 AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
 AZURE_CONTAINER = 'kontener'
 AZURE_URL_EXPIRATION_SECS = 3600
+IMAGE_CAPTIONING_ENDPOINT = env('IMAGE_CAPTIONING_ENDPOINT')
+IMAGE_CAPTIONING_KEY = env('IMAGE_CAPTIONING_KEY')
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None

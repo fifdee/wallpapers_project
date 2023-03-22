@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+{% load crispy_forms_filters %}
+
+{% load i18n %}
+{% load account %}
+
+{% block head_title %}{% trans "Password Reset" %}{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column align-items-center text-white-50">
+        <h4>Create your account</h4>
+
+        <p class="small">Enter your e-mail address below, and we'll send you an e-mail allowing you to set up your password.</p>
+
+        <form class="form-text" method="POST" action="{% url 'signup' %}" class="password_reset">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <button class="btn btn-dark" type="submit" name="action"
+                    onclick="this.disabled=true; this.form.submit();">Submit</button>
+        </form>
+
+        <p class="small mt-3">{% blocktrans %}Already have an account? Then please <a class="text-white" href="{{ login_url }}">sign in</a>
+            .{% endblocktrans %}</p>
+    </div>
+{% endblock %}

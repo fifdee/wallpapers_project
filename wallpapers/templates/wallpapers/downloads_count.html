@@ -1,0 +1,10 @@
+{% if request.user.temporary and user_downloads >= 0 %}
+    <div class="d-flex flex-column align-items-center">
+        <div class="alert bg-dark mt-2" role="alert">
+            <a class="text-decoration-none text-white-50" href="{% url 'signup' %}">
+                Downloads in the last 24h: {{ user_downloads }}.
+                Create an account to download more wallpapers today.
+            </a>
+        </div>
+    </div>
+{% endif %}
