@@ -70,7 +70,7 @@ def post_caption_wallpaper(sender, instance, created, **kwargs):
 
         try:
             ...
-            # ping_google()
+            ping_google()
         except Exception:
             # Bare 'except' because we could get a variety
             # of HTTP-related exceptions.
