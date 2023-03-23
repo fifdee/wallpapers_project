@@ -4,6 +4,7 @@ from allauth.account.views import PasswordResetView
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils.timezone import now
 from django.views.generic import View, DetailView
 from django.conf import settings
@@ -149,6 +150,15 @@ def wallpaper_delete(request):
             wp.delete()
 
         return redirect('wallpapers_not_approved_list_view')
+
+
+def robots_txt_view(request):
+    lines = [
+        "User-Agent: *",
+        "Disallow: /private/",
+        f"Sitemap: {request.build_absolute_uri(reverse('django.contrib.sitemaps.views.sitemap'))}"
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
 class SetEmailResetPassword(PasswordResetView):

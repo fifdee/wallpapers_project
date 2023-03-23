@@ -26,13 +26,13 @@
     <section class="py-2">
         <div class="container px-1 mt-1">
             <div class="row">
-                <div class="col-1 m-2">
+                <div class="col-1">
                     <div class="btn btn-dark {% if request.user_agent.is_mobile %}btn-sm{% endif %}" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
                          hx-vals='{"category":"all", "sort":"{{ request.session.sort }}"}'>All
                     </div>
                 </div>
                 {% for category in categories %}
-                    <div class="col-1 m-2">
+                    <div class="col-1">
                         <div class="btn btn-dark {% if request.user_agent.is_mobile %}btn-sm{% endif %}" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
                              hx-vals='{"category":"{{ category.title }}", "sort":"{{ request.session.sort }}"}'>
                             {{ category.title }}
@@ -50,12 +50,12 @@
                     {% if request.user_agent.is_mobile %}
                         <div class="card bg-black col-6 mx-0 my-2 p-1">
                     {% else %}
-                        <div class="card bg-black col-3 mx-0 my-2 p-1">
+                        <div class="card bg-black col-2 mx-0 my-2 p-1">
                     {% endif %}
                             <img src="{{ object.thumbnail.url }}" class="card-img-top" alt="{{ object.title }}">
                             <div class="card-body">
                                 <a href="{{ object.image.url }}" target="_blank"><div hx-post="{% url 'wallpaper_download_view' %}" hx-swap="none"
-                                         hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1">Download</div></a>&nbsp;
+                                         hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark btn-sm py-1">Download</div></a>&nbsp;
                                 <a href="{% url 'wallpaper_detail_view' object.slug %}" class="btn btn-dark py-1 btn-sm">Details</a>
                                 {% if request.user.is_superuser %}
                                     <div hx-post="{% url 'wallpaper_delete' %}" hx-target="body"
