@@ -33,6 +33,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('signup/', SetEmailResetPassword.as_view(), name='signup'),
     path('robots.txt/', robots_txt_view),
-    path('sitemap.xml/', sitemap, {'sitemaps': {'jokes': GenericSitemap(info_dict)}},
+    path('sitemap.xml/', sitemap, {'sitemaps': {'wallpapers': GenericSitemap(info_dict)}},
          name='django.contrib.sitemaps.views.sitemap'),
 ]
