@@ -18,9 +18,9 @@ class WallpapersListView(CheckIfUserConverted, View):
         print(self.request.user_agent)
 
         if self.request.user_agent.is_mobile:
-            wps = Wallpaper.objects.filter(is_landscape=False)
+            wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
         else:
-            wps = Wallpaper.objects.filter(is_landscape=True)
+            wps = Wallpaper.objects.filter(is_landscape=True, approved=True)
 
         try:
             category = self.request.GET['category']
@@ -77,6 +77,23 @@ class WallpapersListView(CheckIfUserConverted, View):
         return render(self.request, template_name='wallpapers/wallpapers_list_view.html', context=context)
 
 
+class WallpapersNotApprovedListView(CheckIfUserConverted, View):
+    def get(self, *args, **kwargs):
+        if self.request.user.is_superuser:
+            wps = Wallpaper.objects.filter(approved=False)
+            paginator = Paginator(wps, 1)
+            page_number = self.request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+
+            context = {
+                'object_list': page_obj,
+            }
+
+            return render(self.request, template_name='wallpapers/wallpapers_not_approved_list.html', context=context)
+        else:
+            return redirect('wallpapers_list_view')
+
+
 class WallpaperDetailView(DetailView):
     queryset = Wallpaper.objects.all()
     template_name = 'wallpapers/wallpaper_detail_view.html'
@@ -100,6 +117,42 @@ class DownloadCreateView(View):
         self.request.session['downloaded'].append(wp.id)
 
         return HttpResponse(f'ok')
+
+
+def wallpaper_approve(request):
+    if request.method == 'POST':
+        if request.user.is_superuser:
+            pk = request.POST['pk']
+            wp = Wallpaper.objects.get(pk=pk)
+
+            wp.approved = True
+            wp.save()
+
+        return redirect('wallpapers_not_approved_list_view')
+
+
+def wallpaper_approve_premium(request):
+    if request.method == 'POST':
+        if request.user.is_superuser:
+            pk = request.POST['pk']
+            wp = Wallpaper.objects.get(pk=pk)
+
+            wp.approved = True
+            wp.is_premium = True
+            wp.save()
+
+        return redirect('wallpapers_not_approved_list_view')
+
+
+def wallpaper_delete(request):
+    if request.method == 'POST':
+        if request.user.is_superuser:
+            pk = request.POST['pk']
+            wp = Wallpaper.objects.get(pk=pk)
+
+            wp.delete()
+
+        return redirect('wallpapers_not_approved_list_view')
 
 
 class SetEmailResetPassword(PasswordResetView):

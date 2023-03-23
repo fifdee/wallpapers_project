@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail, get_image_title_and_tags, \
-    title_from_filename
+    category_and_title_from_filename
 
 
 class User(AbstractUser):
@@ -38,7 +38,13 @@ class Wallpaper(models.Model):
                 self.is_landscape = False
 
         if not self.title:
-            self.title = title_from_filename(self.image.name, self.is_landscape)
+            category_name, title_name = category_and_title_from_filename(self.image.name, self.is_landscape)
+            self.title = title_name
+
+            if Category.objects.exists(title=category_name):
+                self.category = Category.objects.get(title=category_name)
+            else:
+                self.category = Category.objects.create(title=category_name)
 
         return super().save(*args, **kwargs)
 

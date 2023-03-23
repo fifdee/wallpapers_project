@@ -15,8 +15,16 @@
                 <div class="collapse navbar-collapse text-white" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-white" aria-current="page" href="{% url 'wallpapers_list_view' %}"><h3>Wallpapers</h3></a>
+                            <a class="nav-link text-white" aria-current="page" href="{% url 'wallpapers_list_view' %}">
+                                <h3>Wallpapers</h3></a>
                         </li>
+
+                        {% if request.user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" aria-current="page"
+                                   href="{% url 'wallpapers_not_approved_list_view' %}"><h3>Approve</h3></a>
+                            </li>
+                        {% endif %}
 
                         {% if request.user.is_authenticated %}
                             {% if not request.user.temporary %}

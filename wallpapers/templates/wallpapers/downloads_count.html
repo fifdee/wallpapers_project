@@ -1,4 +1,4 @@
-{% if request.user.temporary and user_downloads >= 0 %}
+{% if request.user.temporary and user_downloads >= 5 %}
     <div class="d-flex flex-column align-items-center">
         <div class="alert bg-dark mt-2" role="alert">
             <a class="text-decoration-none text-white-50" href="{% url 'signup' %}">
