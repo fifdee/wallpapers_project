@@ -60,7 +60,7 @@ class WallpapersListView(CheckIfUserConverted, View):
 
             wps = sorted(wps, key=f, reverse=True)
 
-        paginator = Paginator(wps, 8)
+        paginator = Paginator(wps, 12)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
