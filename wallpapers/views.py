@@ -17,10 +17,7 @@ class WallpapersListView(CheckIfUserConverted, View):
     def get(self, *args, **kwargs):
         print(self.request.user_agent)
 
-        if self.request.user_agent.is_mobile:
-            wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
-        else:
-            wps = Wallpaper.objects.filter(is_landscape=True, approved=True)
+        wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
 
         try:
             category = self.request.GET['category']
@@ -58,7 +55,6 @@ class WallpapersListView(CheckIfUserConverted, View):
             def f(wp):
                 return recent_downloads.filter(wallpaper=wp).count()
 
-            # TODO is it okay to run sorted on queryset??????
             wps = sorted(wps, key=f, reverse=True)
 
         paginator = Paginator(wps, 8)
