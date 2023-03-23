@@ -46,6 +46,8 @@ class WallpapersListView(CheckIfUserConverted, View):
         if category != 'all':
             wps = wps.filter(category__title=category)
 
+        print(f'category: {category}')
+
         if sort == 'newest':
             wps = wps.order_by('-date_added')
 

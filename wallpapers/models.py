@@ -56,7 +56,7 @@ class Wallpaper(models.Model):
         super(Wallpaper, self).delete()
 
     def get_absolute_url(self):
-        return reverse('wallpaper_details', args=[self.slug])
+        return reverse('wallpaper_detail_view', args=[self.slug])
 
     class Meta:
         ordering = ['-date_added']
