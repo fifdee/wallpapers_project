@@ -41,7 +41,7 @@ class Wallpaper(models.Model):
             category_name, title_name = category_and_title_from_filename(self.image.name, self.is_landscape)
             self.title = title_name
 
-            if Category.objects.exists(title=category_name):
+            if Category.objects.filter(title=category_name).exists():
                 self.category = Category.objects.get(title=category_name)
             else:
                 self.category = Category.objects.create(title=category_name)
