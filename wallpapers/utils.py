@@ -47,7 +47,7 @@ def get_image_tags(image_url):
         if len(tags_result_remote.tags) == 0:
             return None
         else:
-            return [tag.name for tag in tags_result_remote]
+            return [tag.name for tag in tags_result_remote.tags]
 
     except Exception as e:
         print(f'captioning exception: {e}')
