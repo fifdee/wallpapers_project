@@ -32,7 +32,7 @@ def category_and_title_from_filename(filename, is_landscape=True):
     return category, title
 
 
-def get_image_title_and_tags(image_url):
+def get_image_tags(image_url):
     from azure.cognitiveservices.vision.computervision import ComputerVisionClient
     from msrest.authentication import CognitiveServicesCredentials
     subscription_key = settings.IMAGE_CAPTIONING_KEY
@@ -40,8 +40,15 @@ def get_image_title_and_tags(image_url):
 
     computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
     try:
-        result = computervision_client.describe_image(image_url)
-        return {'tags': result.tags, 'title': result.captions[0].text}
+        # result = computervision_client.describe_image(image_url)
+        # return {'tags': result.tags, 'title': result.captions[0].text}
+
+        tags_result_remote = computervision_client.tag_image(image_url)
+        if len(tags_result_remote.tags) == 0:
+            return None
+        else:
+            return [tag.name for tag in tags_result_remote]
+
     except Exception as e:
         print(f'captioning exception: {e}')
 

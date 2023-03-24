@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.timezone import now
 
-from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail, get_image_title_and_tags, \
+from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail, get_image_tags, \
     category_and_title_from_filename
 
 
@@ -65,11 +65,11 @@ class Wallpaper(models.Model):
 def post_caption_wallpaper(sender, instance, created, **kwargs):
     if created:
         print(f'Image url: {instance.image.url}')
-        r = get_image_title_and_tags(instance.image.url)
+        r = get_image_tags(instance.image.url)
         print(r)
         if r:
-            instance.tags = ', '.join(r['tags']) + ', ' + instance.tags
-            instance.title = r['title'] + ' - ' + instance.title + '(' + instance.tags + ')'
+            instance.tags = ', '.join(r) + ', ' + instance.tags
+            instance.title = instance.title + '(' + instance.tags + ')'
 
         unique_slugify(instance, instance.title)
         instance.save()
