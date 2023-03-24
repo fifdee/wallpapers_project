@@ -5,7 +5,7 @@ from PIL import Image
 from django.conf import settings
 
 
-def category_and_title_from_filename(filename, is_landscape=True):
+def title_from_filename(filename, is_landscape=True):
     import re
 
     title = filename
@@ -15,13 +15,6 @@ def category_and_title_from_filename(filename, is_landscape=True):
         to_delete = r[0]
         title = title.replace(to_delete, '')
 
-    category = ''
-    try:
-        category = title.split(' ')[0]
-        title = title.replace(category, '').strip()
-    except Exception:
-        ...
-
     if 'wallpaper' not in title:
         title += ' wallpaper'
 
@@ -29,7 +22,7 @@ def category_and_title_from_filename(filename, is_landscape=True):
         if 'mobile' not in title:
             title = title.replace('wallpaper', 'mobile wallpaper')
 
-    return category, title
+    return title
 
 
 def get_image_tags(image_url):

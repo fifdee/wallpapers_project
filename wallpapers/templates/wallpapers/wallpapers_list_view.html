@@ -26,11 +26,11 @@
     <section class="py-2">
         <div class="container px-1 mt-1">
             <div class="row">
-                <div class="col-1">
-                    <div class="btn btn-dark {% if request.user_agent.is_mobile %}btn-sm{% endif %}" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
-                         hx-vals='{"category":"all", "sort":"{{ request.session.sort }}"}'>All
-                    </div>
-                </div>
+{#                <div class="col-1">#}
+{#                    <div class="btn btn-dark {% if request.user_agent.is_mobile %}btn-sm{% endif %}" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"#}
+{#                         hx-vals='{"category":"all", "sort":"{{ request.session.sort }}"}'>All#}
+{#                    </div>#}
+{#                </div>#}
 {#                {% for category in categories %}#}
 {#                    <div class="col-1">#}
 {#                        <div class="btn btn-dark {% if request.user_agent.is_mobile %}btn-sm{% endif %}" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"#}
