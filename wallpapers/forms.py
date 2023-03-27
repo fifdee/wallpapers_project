@@ -1,3 +1,5 @@
+import django.forms
+from django.forms import Form
 from allauth.account.forms import ResetPasswordForm
 from allauth.account.utils import filter_users_by_email
 
@@ -18,3 +20,7 @@ class UserConvertForm(ResetPasswordForm):
         else:
             self._send_password_reset_mail(request, email, self.users, **kwargs)
         return email
+
+
+class SearchForm(Form):
+    query = django.forms.CharField(max_length=80, min_length=3, label='')

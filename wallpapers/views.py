@@ -8,8 +8,9 @@ from django.urls import reverse
 from django.utils.timezone import now
 from django.views.generic import View, DetailView
 from django.conf import settings
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
-from wallpapers.forms import UserConvertForm
+from wallpapers.forms import UserConvertForm, SearchForm
 from wallpapers.models import Wallpaper, Category, Download, User
 from wallpapers.my_mixins import CheckIfUserConverted
 
@@ -70,7 +71,35 @@ class WallpapersListView(CheckIfUserConverted, View):
         context = {
             'object_list': page_obj,
             'categories': Category.objects.all(),
-            'user_downloads': user_downloads
+            'user_downloads': user_downloads,
+            'form': SearchForm()
+        }
+
+        return render(self.request, template_name='wallpapers/wallpapers_list_view.html', context=context)
+
+    def post(self, *args, **kwargs):
+        form = SearchForm(data=self.request.POST)
+        if form.is_valid():
+            q = form.cleaned_data['query']
+            print(q)
+            vector = SearchVector('title')
+            query = SearchQuery(q)
+            wps = Wallpaper.objects.annotate(rank=SearchRank(vector, query)).filter(is_landscape=False,
+                                                                                    approved=True).order_by('-rank')
+        else:
+            wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
+
+        paginator = Paginator(wps, 12)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        user_downloads = Download.objects.filter(time__gte=now().date() - datetime.timedelta(days=1),
+                                                 user=self.request.user).count()
+
+        context = {
+            'object_list': page_obj,
+            'user_downloads': user_downloads,
+            'form': SearchForm()
         }
 
         return render(self.request, template_name='wallpapers/wallpapers_list_view.html', context=context)
