@@ -48,6 +48,26 @@ def get_image_tags(image_url):
     return None
 
 
+def get_description_from_keywords(tags_as_string_comma_sep):
+    import openai
+    openai.api_key = settings.OPENAI_KEY
+    prompt = f'Write a mobile wallpaper description based on following keywords: {tags_as_string_comma_sep}'
+
+    r = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=prompt,
+        max_tokens=350,
+        temperature=0
+    )
+
+    try:
+        description = r['choices'][0]['text']
+        return description
+    except Exception as e:
+        print(f'OPEN AI EXCEPTION: {e}')
+        return None
+
+
 def compress_image_return_with_thumbnail(input_image):
     thumbnail_size = 512, 512
 

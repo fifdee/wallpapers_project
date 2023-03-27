@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from wallpapers.utils import unique_slugify, compress_image_return_with_thumbnail, get_image_tags, \
-    title_from_filename
+    title_from_filename, get_description_from_keywords
 
 
 class User(AbstractUser):
@@ -16,6 +16,7 @@ class User(AbstractUser):
 class Wallpaper(models.Model):
     title = models.TextField(blank=True)
     tags = models.TextField(default='', blank=True)
+    description = models.TextField(default='', blank=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(max_length=200)
     thumbnail = models.ImageField(blank=True, max_length=200)
@@ -59,12 +60,19 @@ class Wallpaper(models.Model):
 
 def post_caption_wallpaper(sender, instance, created, **kwargs):
     if created:
+        keywords = instance.title
+
         print(f'Image url: {instance.image.url}')
         r = get_image_tags(instance.image.url)
         print(r)
         if r:
+            keywords = keywords + ', ' + ', '.join(r)
             instance.tags = ', '.join(r) + ', ' + instance.tags
-            instance.title = instance.title + '(' + instance.tags + ')'
+            instance.title = instance.title + ' ( tags: ' + instance.tags + ' )'
+
+        description = get_description_from_keywords(keywords)
+        if description:
+            instance.description = description
 
         unique_slugify(instance, instance.title)
         instance.save()
