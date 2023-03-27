@@ -18,10 +18,10 @@
                         {% if not request.user_agent.is_mobile %}</div>{% endif %}
                         {% if not request.user_agent.is_mobile %}<div class="card bg-black col-6">{% endif %}
                             <div class="card-body">
-                                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-dark py-1 btn-lg">Go back</a>
+                                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-dark py-1 btn-lg text-nowrap">Go back</a>
                                 <a href="{{ object.image.url }}" target="_blank">
                                     <div hx-post="{% url 'wallpaper_download_view' %}" hx-swap="none"
-                                         hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1 btn-lg">Download
+                                         hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1 btn-lg text-nowrap">Download
                                     </div>
                                 </a>
                                 <h5 class="card-text text-white-50 mt-3">{{ object.title }}</h5>

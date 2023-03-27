@@ -62,8 +62,8 @@
                 <div class="card-body">
                     <a href="{{ object.image.url }}" target="_blank"><div hx-post="{% url 'wallpaper_download_view' %}"
                                                                           hx-swap="none"
-                             hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark btn-sm py-1">Download</div></a>&nbsp;
-                    <a href="{% url 'wallpaper_detail_view' object.slug %}" class="btn btn-dark py-1 btn-sm">Details</a>
+                             hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark btn-sm py-1 text-nowrap">Download</div></a>&nbsp;
+                    <a href="{% url 'wallpaper_detail_view' object.slug %}" class="btn btn-dark py-1 btn-sm text-nowrap">Details</a>
                     {% if request.user.is_superuser %}
                         <div hx-post="{% url 'wallpaper_delete' %}" hx-target="body"
                              hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1">Delete
