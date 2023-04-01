@@ -2,7 +2,7 @@
 {% load crispy_forms_filters %}
 
 {% if request.session.category %}
-    {% block title %}{{ request.session.category|capfirst }} {{ request.session.sort }} wallpapers{% endblock title %}
+    {% block title %}{{ request.session.category|capfirst }} {{ request.session.sort }} mobile wallpapers{% endblock title %}
 {% endif %}
 
 {% block content %}
@@ -11,19 +11,32 @@
     <section class="py-2">
         <div class="container px-1 mt-1">
             <div class="row justify-content-center">
-                <div class="btn btn-dark col-5 m-1" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
-                     hx-vals='{"sort":"newest", "category":"{{ request.session.category }}"}'>
+                <div class="btn btn-dark col-5 m-1 {% if request.session.sort == 'newest' %}active{% endif %}"
+                     hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"sort":"newest", "page":"1", "category":"{{ request.session.category }}"}'>
                     Newest
                 </div>
 
-                <div class="btn btn-dark col-5 m-1" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
-                     hx-vals='{"sort":"trending", "category":"{{ request.session.category }}"}'>
+                <div class="btn btn-dark col-5 m-1 {% if request.session.sort == 'trending' %}active{% endif %}"
+                     hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"sort":"trending", "page":"1", "category":"{{ request.session.category }}"}'>
                     Trending
                 </div>
             </div>
             <div class="row justify-content-center">
-                <form class="form col-sm-6 pt-3" hx-post="{% url 'wallpapers_list_view' %}" hx-target="body" >
+                <form method="get" class="form col-sm-6 pt-3 text-center" hx-get="{% url 'wallpapers_list_view' %}"
+                      hx-target="body">
                     {{ form.query|as_crispy_field }}
+                    <input type="hidden" name="page" value="1"/>
+
+                    <button class="btn btn-outline-primary text-white col-sm-2" type="submit">Search</button>
+
+                    {% if request.session.query != '' %}
+                        <button class="btn btn-outline-primary text-white col-sm-2"
+                                hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                                hx-vals='{"query":"", "page":"1"}'
+                        >Clear</button>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -81,8 +94,10 @@
     <div class="pagination text-white-50 justify-content-center mb-3">
         <span class="step-links">
             {% if object_list.has_previous %}
-                <a class="btn btn-dark py-1" href="?page=1">&laquo; first</a>
-                <a class="btn btn-dark py-1 btn-lg" href="?page={{ object_list.previous_page_number }}">previous</a>
+                <div class="btn btn-dark py-1" hx-target="body" hx-get="{% url 'wallpapers_list_view' %}"
+                     hx-vals='{"page":"{{ 1 }}"}'>&laquo; first</div>
+                <div class="btn btn-dark py-1 btn-lg" hx-target="body" hx-get="{% url 'wallpapers_list_view' %}"
+                     hx-vals='{"page":"{{ object_list.previous_page_number }}"}'>previous</div>
             {% endif %}
 
             <span class="current">
@@ -90,8 +105,10 @@
             </span>
 
             {% if object_list.has_next %}
-                <a class="btn btn-dark py-1 btn-lg" href="?page={{ object_list.next_page_number }}">next</a>
-                <a class="btn btn-dark py-1" href="?page={{ object_list.paginator.num_pages }}">last &raquo;</a>
+                <div class="btn btn-dark py-1 btn-lg" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"page":"{{ object_list.next_page_number }}"}'>next</div>
+                <div class="btn btn-dark py-1" hx-get="{% url 'wallpapers_list_view' %}" hx-target="body"
+                     hx-vals='{"page":"{{ object_list.paginator.num_pages }}"}'>last &raquo;</div>
             {% endif %}
         </span>
     </div>

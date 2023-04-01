@@ -13,6 +13,7 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from wallpapers.forms import UserConvertForm, SearchForm
 from wallpapers.models import Wallpaper, Category, Download, User
 from wallpapers.my_mixins import CheckIfUserConverted
+from wallpapers.utils import get_value
 
 
 class WallpapersListView(CheckIfUserConverted, View):
@@ -21,33 +22,18 @@ class WallpapersListView(CheckIfUserConverted, View):
 
         wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
 
-        try:
-            category = self.request.GET['category']
-        except KeyError:
-            if self.request.session.get('category'):
-                ...
-            else:
-                self.request.session['category'] = 'all'
-        else:
-            self.request.session['category'] = category
+        page = get_value(self.request, 'page', 1)
+        query = get_value(self.request, 'query', '')
+        category = get_value(self.request, 'category', 'all')
+        sort = get_value(self.request, 'sort', 'newest')
 
-        try:
-            sort = self.request.GET['sort']
-        except KeyError:
-            if self.request.session.get('sort'):
-                ...
-            else:
-                self.request.session['sort'] = 'newest'
-        else:
-            self.request.session['sort'] = sort
-
-        category = self.request.session['category']
-        sort = self.request.session['sort']
+        if query != '':
+            vector = SearchVector('title')
+            search_query = SearchQuery(query)
+            wps = wps.annotate(rank=SearchRank(vector, search_query)).filter(rank__gte=0.05).order_by('-rank')
 
         if category != 'all':
             wps = wps.filter(category__title=category)
-
-        print(f'category: {category}')
 
         if sort == 'newest':
             wps = wps.order_by('-date_added')
@@ -62,8 +48,7 @@ class WallpapersListView(CheckIfUserConverted, View):
             wps = sorted(wps, key=f, reverse=True)
 
         paginator = Paginator(wps, 12)
-        page_number = self.request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        page_obj = paginator.get_page(page)
 
         user_downloads = Download.objects.filter(time__gte=now().date() - datetime.timedelta(days=1),
                                                  user=self.request.user).count()
@@ -72,34 +57,7 @@ class WallpapersListView(CheckIfUserConverted, View):
             'object_list': page_obj,
             'categories': Category.objects.all(),
             'user_downloads': user_downloads,
-            'form': SearchForm()
-        }
-
-        return render(self.request, template_name='wallpapers/wallpapers_list_view.html', context=context)
-
-    def post(self, *args, **kwargs):
-        form = SearchForm(data=self.request.POST)
-        if form.is_valid():
-            q = form.cleaned_data['query']
-            print(q)
-            vector = SearchVector('title')
-            query = SearchQuery(q)
-            wps = Wallpaper.objects.annotate(rank=SearchRank(vector, query)).filter(is_landscape=False,
-                                                                                    approved=True).order_by('-rank')
-        else:
-            wps = Wallpaper.objects.filter(is_landscape=False, approved=True)
-
-        paginator = Paginator(wps, 12)
-        page_number = self.request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
-        user_downloads = Download.objects.filter(time__gte=now().date() - datetime.timedelta(days=1),
-                                                 user=self.request.user).count()
-
-        context = {
-            'object_list': page_obj,
-            'user_downloads': user_downloads,
-            'form': SearchForm()
+            'form': SearchForm(data={'query': query}),
         }
 
         return render(self.request, template_name='wallpapers/wallpapers_list_view.html', context=context)
@@ -187,7 +145,7 @@ def robots_txt_view(request):
     lines = [
         "User-Agent: *",
         "Disallow: /private/",
-        f"Sitemap: {request.build_absolute_uri(reverse('django.contrib.sitemaps.views.sitemap'))}"
+        f"Sitemap: {request.build_absolute_uri(reverse('sitemap'))}"
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain")
 

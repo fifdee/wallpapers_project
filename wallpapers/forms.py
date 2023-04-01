@@ -23,4 +23,4 @@ class UserConvertForm(ResetPasswordForm):
 
 
 class SearchForm(Form):
-    query = django.forms.CharField(max_length=80, min_length=3, label='')
+    query = django.forms.CharField(max_length=80, label='', required=False)

@@ -158,3 +158,18 @@ def _slug_strip(value, separator='-'):
             re_sep = re.escape(separator)
         value = re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
     return value
+
+
+def get_value(request, name, default):
+    try:
+        variable = request.GET[name]
+    except KeyError:
+        if request.session.get(name):
+            variable = request.session[name]
+        else:
+            variable = default
+            request.session[name] = default
+    else:
+        request.session[name] = variable
+
+    return variable
