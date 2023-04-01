@@ -1,3 +1,5 @@
+from urllib.request import urlopen
+
 from django.contrib.auth.models import AbstractUser
 from django.contrib.sitemaps import ping_google
 from django.db import models
@@ -80,6 +82,11 @@ def post_caption_wallpaper(sender, instance, created, **kwargs):
         try:
             ...
             ping_google()
+
+            # Ping search engines
+            slug = instance.slug
+            urlopen(f'https://www.bing.com/indexnow?url=https://wallpapers.v45.org/{slug}/&key'
+                    '=5119ecb8d7bc4cad8c91f00fcd257863')
         except Exception:
             # Bare 'except' because we could get a variety
             # of HTTP-related exceptions.

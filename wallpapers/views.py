@@ -150,6 +150,11 @@ def robots_txt_view(request):
     return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
+def indexnow_view(request):
+    content = '5119ecb8d7bc4cad8c91f00fcd257863'
+    return HttpResponse(content, content_type="text/plain")
+
+
 class SetEmailResetPassword(PasswordResetView):
     form_class = UserConvertForm
     template_name = 'account/convert.html'
