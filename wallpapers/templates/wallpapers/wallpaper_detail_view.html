@@ -1,7 +1,7 @@
 {% extends 'account/base.html' %}
 
-{% block title %}{{ object.title }}{% endblock title %}
-{% block meta_desc %}{{ object.description }}{% endblock meta_desc %}
+{% block title %}{{ object.title|slice:'0:70' }}{% endblock title %}
+{% block meta_desc %}{{ object.description|slice:'0:160' }}{% endblock meta_desc %}
 
 {% block content %}
     <section class="py-2">
@@ -24,7 +24,7 @@
                                          hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1 btn-lg text-nowrap">Download
                                     </div>
                                 </a>
-                                <h5 class="card-text text-white-50 mt-3">{{ object.title }}</h5>
+                                <h1 style="font-size: larger;" class="card-text text-white-50 mt-3">{{ object.title }}</h1>
                                 <p class="card-text text-white-50 mt-3">Description: {{ object.description }}</p>
                             </div>
                         {% if not request.user_agent.is_mobile %}</div>{% endif %}

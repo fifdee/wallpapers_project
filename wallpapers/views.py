@@ -197,9 +197,13 @@ class SetEmailResetPassword(PasswordResetView):
     template_name = 'account/convert.html'
 
     def dispatch(self, request, *args, **kwargs):
-        # it the user is not temporary - redirect
+        # if user not created - redirect
+        if self.request.user.is_anonymous:
+            return redirect('wallpapers_list_view')
+
+        # if the user is not temporary - redirect
         if not self.request.user.temporary:
-            return redirect('leaderboard-list')
+            return redirect('wallpapers_list_view')
 
         return super(SetEmailResetPassword, self).dispatch(request, *args, **kwargs)
 

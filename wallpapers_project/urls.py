@@ -20,9 +20,11 @@ from django.urls import path, include
 
 from wallpapers.models import Wallpaper
 from wallpapers.views import SetEmailResetPassword, robots_txt_view
+from wallpapers.sitemaps import WallpaperSitemap
 
-info_dict = {
-    'queryset': Wallpaper.objects.all(),
+
+sitemaps = {
+    "wallpapers": WallpaperSitemap,
 }
 
 urlpatterns = [
@@ -33,6 +35,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('signup/', SetEmailResetPassword.as_view(), name='signup'),
     path('robots.txt/', robots_txt_view),
-    path('sitemap.xml/', sitemap, {'sitemaps': {'wallpapers': GenericSitemap(info_dict)}},
-         name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap.xml/', sitemap, {"sitemaps": sitemaps}, name="sitemap")
 ]
