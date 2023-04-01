@@ -35,6 +35,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('signup/', SetEmailResetPassword.as_view(), name='signup'),
     path('robots.txt/', robots_txt_view),
-    path('5119ecb8d7bc4cad8c91f00fcd257863/', indexnow_view),
+    path('5119ecb8d7bc4cad8c91f00fcd257863.txt/', indexnow_view),
     path('sitemap.xml/', sitemap, {"sitemaps": sitemaps}, name="sitemap")
 ]
