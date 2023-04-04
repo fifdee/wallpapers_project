@@ -256,3 +256,8 @@ IMAGE_CAPTIONING_KEY = env('IMAGE_CAPTIONING_KEY')
 OPENAI_KEY = env('OPENAI_KEY')
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}

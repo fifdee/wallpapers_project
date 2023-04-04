@@ -13,6 +13,24 @@ class WallpapersApiViewSet(ModelViewSet):
     serializer_class = WallpaperSerializer
     permission_classes = [HasAPIKey | IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        try:
+            query = request.GET['query']
+        except KeyError:
+            ...
+        else:
+            queryset = queryset.filter(title__icontains=query)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
         serializer.save()
 
