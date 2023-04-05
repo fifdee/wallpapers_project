@@ -26,7 +26,7 @@ class Wallpaper(models.Model):
     date_added = models.DateTimeField(default=now)
     is_landscape = models.BooleanField(default=True)
     is_premium = models.BooleanField(default=False)
-    slug = models.SlugField(null=False, unique=True, blank=True, max_length=150)
+    slug = models.SlugField(null=True, blank=True, max_length=150)
 
     def __str__(self):
         if len(self.title) > 150:
