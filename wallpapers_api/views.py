@@ -28,8 +28,8 @@ class WallpapersApiViewSet(ModelViewSet):
         except KeyError:
             ...
         else:
-            if order == "?":
-                queryset = queryset.order_by(order)
+            if order == "random":
+                queryset = queryset.order_by("?")
 
         page = self.paginate_queryset(queryset)
         if page is not None:
