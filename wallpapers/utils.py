@@ -53,14 +53,13 @@ def get_description_from_keywords(tags_as_string_comma_sep):
     openai.api_key = settings.OPENAI_KEY
     prompt = f'Write a mobile wallpaper description based on following keywords: {tags_as_string_comma_sep}'
 
-    r = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=350,
-        temperature=0
-    )
-
     try:
+        r = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=350,
+            temperature=0
+        )
         description = r['choices'][0]['text']
         return description
     except Exception as e:

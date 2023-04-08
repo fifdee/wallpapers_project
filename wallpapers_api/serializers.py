@@ -7,7 +7,7 @@ from wallpapers.models import Wallpaper, Download
 class WallpaperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallpaper
-        fields = ['title', 'tags', 'category', 'image', 'thumbnail']
+        fields = ['pk', 'title', 'tags', 'category', 'image', 'thumbnail']
 
 
 class DownloadSerializer(serializers.ModelSerializer):
