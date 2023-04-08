@@ -9,7 +9,7 @@ from .serializers import WallpaperSerializer, DownloadSerializer
 
 
 class WallpapersApiViewSet(ModelViewSet):
-    queryset = Wallpaper.objects.all()
+    queryset = Wallpaper.objects.filter(approved=True, is_landscape=False)
     serializer_class = WallpaperSerializer
     permission_classes = [HasAPIKey | IsAuthenticated]
 
