@@ -23,6 +23,14 @@ class WallpapersApiViewSet(ModelViewSet):
         else:
             queryset = queryset.filter(title__icontains=query)
 
+        try:
+            order = request.GET['order']
+        except KeyError:
+            ...
+        else:
+            if order == "?":
+                queryset = queryset.order_by(order)
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
