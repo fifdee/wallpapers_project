@@ -180,3 +180,7 @@ class SetEmailResetPassword(PasswordResetView):
                 return super().form_invalid(form)
 
         return super(SetEmailResetPassword, self).form_valid(form)
+
+
+def privacy_policy_view(request, app_name):
+    return render(request, template_name='privacy_policy.html', context={'app_name': app_name})
