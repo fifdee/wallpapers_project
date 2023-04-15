@@ -23,6 +23,7 @@ class Wallpaper(models.Model):
     image = models.ImageField(max_length=200)
     thumbnail = models.ImageField(blank=True, max_length=200)
     approved = models.BooleanField(default=False)
+    rejected = models.BooleanField(default=False)
     date_added = models.DateTimeField(default=now)
     is_landscape = models.BooleanField(default=True)
     is_premium = models.BooleanField(default=False)

@@ -66,13 +66,11 @@ class WallpapersListView(CheckIfUserConverted, View):
 class WallpapersNotApprovedListView(CheckIfUserConverted, View):
     def get(self, *args, **kwargs):
         if self.request.user.is_superuser:
-            wps = Wallpaper.objects.filter(approved=False)
-            paginator = Paginator(wps, 1)
-            page_number = self.request.GET.get('page')
-            page_obj = paginator.get_page(page_number)
+            wps = Wallpaper.objects.filter(approved=False, rejected=False)
+            wp = wps.first()
 
             context = {
-                'object_list': page_obj,
+                'object': wp,
             }
 
             return render(self.request, template_name='wallpapers/wallpapers_not_approved_list.html', context=context)
@@ -107,6 +105,8 @@ class DownloadCreateView(View):
 
 def wallpaper_approve(request):
     if request.method == 'POST':
+        print('wallpaper_approve')
+        next_wp = None
         if request.user.is_superuser:
             pk = request.POST['pk']
             wp = Wallpaper.objects.get(pk=pk)
@@ -114,11 +114,13 @@ def wallpaper_approve(request):
             wp.approved = True
             wp.save()
 
-        return redirect('wallpapers_not_approved_list_view')
+            next_wp = Wallpaper.objects.filter(approved=False, rejected=False).first()
+        return render(request, 'wallpapers/wallpaper_not_approved.html', context={'object': next_wp})
 
 
 def wallpaper_approve_premium(request):
     if request.method == 'POST':
+        next_wp = None
         if request.user.is_superuser:
             pk = request.POST['pk']
             wp = Wallpaper.objects.get(pk=pk)
@@ -127,18 +129,30 @@ def wallpaper_approve_premium(request):
             wp.is_premium = True
             wp.save()
 
-        return redirect('wallpapers_not_approved_list_view')
+            next_wp = Wallpaper.objects.filter(approved=False, rejected=False).first()
+        return render(request, 'wallpapers/wallpaper_not_approved.html', context={'object': next_wp})
 
 
-def wallpaper_delete(request):
+def wallpaper_reject(request):
     if request.method == 'POST':
+        next_wp = None
         if request.user.is_superuser:
             pk = request.POST['pk']
             wp = Wallpaper.objects.get(pk=pk)
 
-            wp.delete()
+            wp.rejected = True
+            wp.approved = False
+            wp.save()
 
-        return redirect('wallpapers_not_approved_list_view')
+            next_wp = Wallpaper.objects.filter(approved=False, rejected=False).first()
+
+            try:
+                to_list = request.POST['return']
+                if to_list == 'to_list':
+                    return redirect('wallpapers_list_view')
+            except:
+                pass
+        return render(request, 'wallpapers/wallpaper_not_approved.html', context={'object': next_wp})
 
 
 def robots_txt_view(request):

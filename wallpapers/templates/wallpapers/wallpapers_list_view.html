@@ -78,8 +78,8 @@
                              hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark btn-sm py-1 text-nowrap">Download</div></a>&nbsp;
                     <a href="{% url 'wallpaper_detail_view' object.slug %}" class="btn btn-dark py-1 btn-sm text-nowrap">Details</a>
                     {% if request.user.is_superuser %}
-                        <div hx-post="{% url 'wallpaper_delete' %}" hx-target="body"
-                             hx-vals='{"pk":"{{ object.pk }}"}' class="btn btn-dark py-1">Delete
+                        <div hx-post="{% url 'wallpaper_reject' %}" hx-target="body"
+                             hx-vals='{"pk":"{{ object.pk }}", "return":"to_list"}' class="btn btn-dark py-1 btn-sm">Reject
                         </div>
                     {% endif %}
                     <h6 class="card-text text-white-50 small mt-3">{{ object.title }}</h6>
