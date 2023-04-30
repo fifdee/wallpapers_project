@@ -19,7 +19,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 
 from wallpapers.models import Wallpaper
-from wallpapers.views import SetEmailResetPassword, robots_txt_view, indexnow_view, privacy_policy_view
+from wallpapers.views import SetEmailResetPassword, robots_txt_view, indexnow_view, privacy_policy_view, etsy_auth
 from wallpapers.sitemaps import WallpaperSitemap
 
 
@@ -38,4 +38,5 @@ urlpatterns = [
     path('5119ecb8d7bc4cad8c91f00fcd257863.txt/', indexnow_view),
     path('sitemap.xml/', sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path('privacy-policy/<str:app_name>/', privacy_policy_view, name='privacy_policy'),
+    path('private/etsy_auth/', etsy_auth, name='etsy_auth'),
 ]

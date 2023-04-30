@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from wallpapers.forms import UserConvertForm, SearchForm
-from wallpapers.models import Wallpaper, Category, Download, User
+from wallpapers.models import Wallpaper, Category, Download, User, AuthData
 from wallpapers.my_mixins import CheckIfUserConverted
 from wallpapers.utils import get_value
 
@@ -198,3 +198,9 @@ class SetEmailResetPassword(PasswordResetView):
 
 def privacy_policy_view(request, app_name):
     return render(request, template_name='privacy_policy.html', context={'app_name': app_name})
+
+
+def etsy_auth(request):
+    request_data = request.GET + '\n\n' + request.POST
+    AuthData.objects.create(data=request_data)
+    return HttpResponse('data saved')

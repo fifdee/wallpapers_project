@@ -115,3 +115,7 @@ class Download(models.Model):
 
     def __str__(self):
         return str(self.wallpaper) + ' | ' + str(self.time)
+
+
+class AuthData(models.Model):
+    data = models.TextField(default='')
