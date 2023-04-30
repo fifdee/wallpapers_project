@@ -201,6 +201,6 @@ def privacy_policy_view(request, app_name):
 
 
 def etsy_auth(request):
-    request_data = request.GET + '\n\n' + request.POST
+    request_data = str(request.GET) + '\n\n' + str(request.POST)
     AuthData.objects.create(data=request_data)
     return HttpResponse('data saved')
